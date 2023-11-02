@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="wREnvironmentBase">
+	<!-- 페이지 처리 부분 선언 -->
+	<sql id = "sqlStart">
+		<![CDATA[
+		SELECT * FROM (
+			SELECT ROWNUM RN, Z.* FROM (
+		]]>
+    </sql>
+
+    <sql id = "sqlEnd">
+		<![CDATA[
+			) Z ) WHERE rn BETWEEN #{firstIndex} + 1 AND #{firstIndex} + #{recordCountPerPage}
+		]]>
+    </sql>
+	<!-- 페이지 처리 부분 선언 끝 -->
+
+   	<sql id = "estbsMax">
+		<![CDATA[
+		SELECT NVL(MAX(SEQ),0)+1
+		  FROM ESTBS_BASS_INFO
+		]]>
+    </sql>
+
+
+	<!-- 라우터 조회 -->
+	<select id="selectEnvironmentBaseList" parameterType="cmap" resultType="cmap">
+		<include refid = "sqlStart" />
+		<![CDATA[
+			SELECT SEQ,
+					KND,
+					TY,
+					INFO_SE,
+					TO_CHAR(DTRMN_DE, 'YYYY-MM-DD') AS DTRMN_DE,
+					NCL,
+					NCL1,
+					NCL2,
+					NCL3,
+					DC,
+					RM,
+					RGSDE,
+					RGSUSR,
+					UPDUSR,
+					UPDDE,
+				    COUNT(*) OVER () AS TOTAL_COUNT
+			  FROM ESTBS_BASS_INFO
+			 WHERE 1=1
+		]]>
+			   <if test='searchDtFrom !=null and searchDtFrom !=""
+			           and searchDtTo !=null and searchDtTo !=""'>
+				   AND DTRMN_DE BETWEEN TO_DATE(#{searchDtFrom}, 'YYYY-MM-DD') and TO_DATE(#{searchDtTo}, 'YYYY-MM-DD')+1
+			   </if>
+ 			<if test='searchKnd !=null and searchKnd !=""'>
+				AND KND = #{searchKnd}
+ 			</if>
+ 			<if test='searchTy !=null and searchTy !=""'>
+				AND TY = #{searchTy}
+ 			</if>
+ 			<if test='searchInfoSe !=null and searchInfoSe !=""'>
+				AND INFO_SE = #{searchInfoSe}
+ 			</if>
+ 			<if test='searchKeyword !=null and searchKeyword !=""'>
+				AND (DC LIKE '%'||#{searchKeyword}||'%' OR RM LIKE '%'||#{searchKeyword}||'%')
+ 			</if>
+			   ORDER BY DTRMN_DE DESC
+		<include refid = "sqlEnd" />
+	</select>
+
+	<insert id="insertEnvironmentBase">
+		<![CDATA[
+			INSERT INTO ESTBS_BASS_INFO (SEQ,
+										KND,
+										TY,
+										INFO_SE,
+										DTRMN_DE,
+										NCL,
+										NCL1,
+										NCL2,
+										NCL3,
+										DC,
+										RM,
+										RGSUSR,
+										RGSDE,
+										UPDUSR,
+										UPDDE
+										    )
+								VALUES(
+	]]>
+										(<include refid="estbsMax"/>),
+	<![CDATA[
+									    #{knd},
+										#{ty},
+									    #{infoSe},
+									    to_date(#{dtrmnDe}, 'YYYY-MM-DD'),
+									    #{ncl},
+									    #{ncl1},
+									    #{ncl2},
+									    #{ncl3},
+									    #{dc},
+									    #{rm},
+									    #{C_USER},
+									    SYSDATE,
+									    #{C_USER},
+									    SYSDATE
+									)
+		]]>
+	</insert>
+
+	<delete id="deleteEnvironmentBase" >
+		DELETE FROM ESTBS_BASS_INFO
+		 WHERE SEQ = #{seq}
+	</delete>
+</mapper>
+

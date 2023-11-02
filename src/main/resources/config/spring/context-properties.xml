@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.3.xsd">
+
+	<!-- 1. context:property-placeholder -->
+	<!-- xml 파일에서만 사용
+		xml 사용("${값}") => <property name="driverClass" value="${db.driverClass}" />
+		여러개 사용시 ,로 분리("classpath:/config/property/globals${spring.profiles.active}.properties,classpath:/config/property/globals.properties")
+	 -->
+	<context:property-placeholder location="classpath:config/property/globals${spring.profiles.active}.properties" ignore-resource-not-found="true" order="1"/>
+
+	<!-- 위에와 동일 -->
+	<!-- 2. org.springframework.beans.factory.config.PropertyPlaceholderConfigurer -->
+	<!-- xml 파일에서만 사용
+	<bean id="propertis" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>classpath:/config/property/globals${spring.profiles.active}.properties</value>
+            </list>
+        </property>
+        <property name="fileEncoding" value="UTF-8" />
+    </bean>
+	-->
+	<!-- 1,2 동일한 방법 임 -->
+	<!-- 위에 1,2번 xml 사용 가능하지만 JAVA에서 호출 안됨. -->
+
+	<!-- 3. org.springframework.beans.factory.config.PropertiesFactoryBean -->
+	<!-- java 사용
+		@Resource(name="propertyConfigurer")
+		private Properties propertyConfigurer;
+
+		@Autowired
+		private Properties propertyConfigurer;
+	-->
+	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+        <property name="locations">
+            <list>
+                <value>classpath:/config/property/globals${spring.profiles.active}.properties</value>
+            </list>
+        </property>
+    </bean>
+
+	<!-- 4.util:properties SpEL(Spring Expression Language) -->
+	<!--
+		xml 사용("#{id['값']}") => <property name="driverClass" value="#{properties['db.driverClass']}" />
+		java 사용(@Value("#{id['값']}") ) => @Value("#{properties['api.server.url']}")
+											private String apiServerUrl;
+	 -->
+	<util:properties id="globalProps" location="classpath:/config/property/globals${spring.profiles.active}.properties"/>
+	<!-- prod, local, dev, test -->
+</beans>

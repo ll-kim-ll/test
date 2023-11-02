@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="wRDeviceInfo">
+	<!-- 페이지 처리 부분 선언 -->
+	<sql id = "sqlStart">
+		<![CDATA[
+		SELECT * FROM (
+			SELECT ROWNUM RN, Z.* FROM (
+		]]>
+    </sql>
+
+    <sql id = "sqlEnd">
+		<![CDATA[
+			) Z ) WHERE rn BETWEEN #{firstIndex} + 1 AND #{firstIndex} + #{recordCountPerPage}
+		]]>
+    </sql>
+	<!-- 페이지 처리 부분 선언 끝 -->
+
+
+
+	<!-- 디바이스 조회 -->
+	<select id="selectDeviceList" parameterType="cmap" resultType="cmap">
+		<include refid = "sqlStart" />
+		<![CDATA[
+			SELECT A.EQPMN_ID,
+				    CSTMR_NO,
+				    A.RM,
+				    B.CSTMR_NM,
+				    B.CSTMR_SE,
+				    B.TELNO,
+				    B.LCLAS_GROUP,
+				    B.MLSFC_GROUP,
+				    B.SCLAS_GROUP,
+				    B.LCLAS_AREA,
+				    B.MLSFC_AREA,
+				    B.SCLAS_AREA,
+				    B.INFO_OTHBC_AT,
+				    B.RM AS CUSTOMER_RM,
+				    COUNT(*) OVER () AS TOTAL_COUNT
+			  FROM DEVICE_INFO A
+					INNER JOIN CUSTOMER_INFO B USING(CSTMR_NO)
+			 WHERE 1=1
+
+		]]>
+			   <if test='searchDtFrom !=null and searchDtFrom !=""
+			           and searchDtTo !=null and searchDtTo !=""'>
+				   AND A.RGSDE BETWEEN TO_DATE(#{searchDtFrom}, 'YYYY-MM-DD') and TO_DATE(#{searchDtTo}, 'YYYY-MM-DD')+1
+			   </if>
+ 				<choose>
+				    <when test='searchSe == "cstmrNo"'>AND CSTMR_NO LIKE '%'||#{searchKeyword}||'%'</when>
+				    <when test='searchSe == "cstmrNm"'>AND B.CSTMR_NM LIKE '%'||#{searchKeyword}||'%'</when>
+				    <when test='searchSe == "telno"'>AND B.TELNO LIKE '%'||#{searchKeyword}||'%'</when>
+				    <when test='searchSe == "eqpmnId"'>AND A.EQPMN_ID LIKE '%'||#{searchKeyword}||'%'</when>
+				    <otherwise>
+				    	AND (CSTMR_NO like '%'||#{searchKeyword}||'%'
+				    		OR B.CSTMR_NM like '%'||#{searchKeyword}||'%'
+				    		OR B.TELNO like '%'||#{searchKeyword}||'%'
+				    		OR A.EQPMN_ID like '%'||#{searchKeyword}||'%'
+				    		)
+				    </otherwise>
+				</choose>
+			   ORDER BY A.RGSDE DESC
+		<include refid = "sqlEnd" />
+	</select>
+
+	<!-- 라우터 조회 -->
+	<select id="selectRouterList" parameterType="cmap" resultType="cmap">
+		<include refid = "sqlStart" />
+		<![CDATA[
+			SELECT A.EQPMN_ID,
+				    CSTMR_NO,
+				    A.KND,
+				    A.TY,
+					A.IP,
+				    A.MACADRS,
+				    A.STTUS,
+				    A.FRMWR_VER,
+				    A.RM AS ROUTER_RM,
+				    B.CSTMR_NM,
+				    B.CSTMR_SE,
+				    B.TELNO,
+				    B.LCLAS_GROUP,
+				    B.MLSFC_GROUP,
+				    B.SCLAS_GROUP,
+				    B.LCLAS_AREA,
+				    B.MLSFC_AREA,
+				    B.SCLAS_AREA,
+				    B.INFO_OTHBC_AT,
+				    B.RM AS CUSTOMER_RM,
+				    COUNT(*) OVER () AS TOTAL_COUNT
+			  FROM ROUTER_DEVICE_INFO A
+					INNER JOIN CUSTOMER_INFO B USING(CSTMR_NO)
+			 WHERE 1=1
+
+		]]>
+			   <if test='searchDtFrom !=null and searchDtFrom !=""
+			           and searchDtTo !=null and searchDtTo !=""'>
+				   AND A.RGSDE BETWEEN TO_DATE(#{searchDtFrom}, 'YYYY-MM-DD') and TO_DATE(#{searchDtTo}, 'YYYY-MM-DD')+1
+			   </if>
+ 				<choose>
+				    <when test='searchSe == "cstmrNo"'>AND CSTMR_NO LIKE '%'||#{searchKeyword}||'%'</when>
+				    <when test='searchSe == "cstmrNm"'>AND B.CSTMR_NM LIKE '%'||#{searchKeyword}||'%'</when>
+				    <when test='searchSe == "telno"'>AND B.TELNO LIKE '%'||#{searchKeyword}||'%'</when>
+				    <when test='searchSe == "eqpmnId"'>AND A.EQPMN_ID LIKE '%'||#{searchKeyword}||'%'</when>
+				    <otherwise>
+				    	AND (CSTMR_NO like '%'||#{searchKeyword}||'%'
+				    		OR B.CSTMR_NM like '%'||#{searchKeyword}||'%'
+				    		OR B.TELNO like '%'||#{searchKeyword}||'%'
+				    		OR A.EQPMN_ID like '%'||#{searchKeyword}||'%'
+				    		)
+				    </otherwise>
+				</choose>
+<!-- 				<choose>
+				    <when test='searchTy.equals("cstmrNo")'>AND B.CSTMR_NO LIKE '%'||#{cstmrNo}||'%'</when>
+				    <when test='searchTy.equals("cstmrNm")'>AND B.CSTMR_NM LIKE '%'||#{cstmrNm}||'%'</when>
+				    <when test='searchTy.equals("telno")'>AND B.TELNO LIKE '%'||#{telno}||'%'</when>
+				    <when test='searchTy.equals("eqpmnId")'>AND A.EQPMN_ID LIKE '%'||#{eqpmnId}||'%'</when>
+				    <otherwise>
+				    	AND (B.CSTMR_NO like '%'||#{cstmrNo}||'%'
+				    		OR B.CSTMR_NM like '%'||#{cstmrNo}||'%'
+				    		OR B.TELNO like '%'||#{cstmrNo}||'%'
+				    		OR A.EQPMN_ID like '%'||#{cstmrNo}||'%'
+				    		)
+				    </otherwise>
+				</choose>
+ -->
+			   ORDER BY A.RGSDE DESC
+		<include refid = "sqlEnd" />
+	</select>
+
+	<!-- 클라리언트 조회 -->
+	<select id="selectClientList" parameterType="cmap" resultType="cmap">
+		<![CDATA[
+			SELECT EQPMN_ID,
+				    NO,
+				    EQPMN_NM,
+				    MACADRS,
+				    FAN,
+				    HUMIDIFIER,
+				    USE_AT,
+				    TRNSMIS_AT,
+				    RM,
+				    RGSUSR,
+				    RGSDE,
+				    UPDUSR,
+				    UPDDE,
+				    MOTION_SENSOR,
+				    SETUP_SEQ,
+				    UV
+			  FROM CLIENT_DEVICE_INFO
+			 WHERE 1=1
+			   AND EQPMN_ID = #{eqpmnid}
+			 ORDER BY RGSDE DESC
+		]]>
+	</select>
+
+
+</mapper>
+

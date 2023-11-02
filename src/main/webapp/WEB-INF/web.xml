@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee; https://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+
+    <display-name>Default</display-name>
+
+	<!-- encodingFilter -->
+    <filter>
+        <filter-name>encodingFilter</filter-name>
+        <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+        <init-param>
+            <param-name>encoding</param-name>
+            <param-value>UTF-8</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>encodingFilter</filter-name>
+        <url-pattern>*.do</url-pattern>
+    </filter-mapping>
+
+	<!-- XSS  -->
+    <filter>
+	    <filter-name>HTMLTagFilter</filter-name>
+	    <filter-class>com.wellrising.uds.core.comm.filter.HTMLTagFilter</filter-class>
+	    <init-param>
+	        <param-name>excludePatterns</param-name>
+	        <param-value>/admin/*.do,/index.do</param-value>
+	    </init-param>
+	</filter>
+	<filter-mapping>
+	    <filter-name>HTMLTagFilter</filter-name>
+	    <url-pattern>*.do</url-pattern>
+	</filter-mapping>
+
+	<!-- URL 프린트 필터 -->
+	<filter>
+		<filter-name>PrintURLFilter</filter-name>
+		<filter-class>com.wellrising.uds.core.comm.filter.PrintURLFilter</filter-class>
+		<init-param>
+			<param-name>FilterParam</param-name>
+			<param-value>param date</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>PrintURLFilter</filter-name>
+		<url-pattern>*.do</url-pattern>
+	</filter-mapping>
+
+	<!-- 스프링 Security 필터 -->
+ 	<filter>
+		<filter-name>springSecurityFilterChain</filter-name>
+		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>springSecurityFilterChain</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+	<!-- The definition of the Root Spring Container shared by all Servlets and Filters -->
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>classpath*:config/spring/**/context-*.xml</param-value>
+	</context-param>
+
+	<!-- Creates the Spring Container shared by all Servlets and Filters -->
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+
+	<!-- Processes application requests -->
+	<servlet>
+		<servlet-name>action</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>/WEB-INF/spring/root-context.xml
+						/WEB-INF/spring/appServlet/servlet-context.xml
+						/WEB-INF/spring/appServlet/com-*.xml
+			</param-value>
+			<!-- , 구분해서 사용해도 됨 -->
+<!-- 			<param-value>/WEB-INF/spring/root-context.xml,/WEB-INF/spring/appServlet/servlet-context.xml,/WEB-INF/spring/appServlet/com-*.xml</param-value> -->
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>action</servlet-name>
+		<url-pattern>*.do</url-pattern>
+	</servlet-mapping>
+	<welcome-file-list>
+		<welcome-file>index.jsp</welcome-file>
+	</welcome-file-list>
+
+	<!-- JSPF -->
+	<jsp-config>
+		<jsp-property-group>
+			<url-pattern>*.jsp</url-pattern>
+			<page-encoding>UTF-8</page-encoding>
+			<include-prelude>/WEB-INF/views/common/taglib/taglib.jspf</include-prelude>
+		</jsp-property-group>
+
+		<!-- 모듈 샘플 -->
+		<jsp-property-group>
+			<url-pattern>/WEB-INF/views/sample/jspf/body/*</url-pattern>
+			<page-encoding>UTF-8</page-encoding>
+			<include-prelude>/WEB-INF/views/sample/jspf/common/topLayout.jspf</include-prelude>
+			<include-coda>/WEB-INF/views/sample/jspf/common/bottomLayout.jspf</include-coda>
+		</jsp-property-group>
+
+		<jsp-property-group>
+			<url-pattern>/WEB-INF/views/admin/*</url-pattern>
+			<page-encoding>UTF-8</page-encoding>
+			<include-prelude>/WEB-INF/views/common/layout/topLayout.jspf</include-prelude>
+			<include-coda>/WEB-INF/views/common/layout/bottomLayout.jspf</include-coda>
+		</jsp-property-group>
+		<jsp-property-group>
+			<url-pattern>/WEB-INF/views/member/*</url-pattern>
+			<page-encoding>UTF-8</page-encoding>
+			<include-prelude>/WEB-INF/views/common/layout/topLayout.jspf</include-prelude>
+			<include-coda>/WEB-INF/views/common/layout/bottomLayout.jspf</include-coda>
+		</jsp-property-group>
+
+	</jsp-config>
+<!--
+	<jsp-config>
+	    <jsp-property-group>
+	           <url-pattern>*.jsp</url-pattern> 전체 *.jsp 적용
+	           <include-prelude>/ready.jspf</include-prelude>
+	           <include-coda>/end.jspf</include-coda>
+	     </jsp-property-group>
+
+	     <jsp-property-group>
+	           <url-pattern>/WEB-INF/views/</url-pattern> /WEB-INF/views/* 하위 파일만 적용, jsp 파일 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%> 중복되면 적용 안됨
+	           <include-prelude>/ready2.jspf</include-prelude>
+	           <include-coda>/end2.jspf</include-coda>
+	     </jsp-property-group>
+	</jsp-config>
+
+
+	<jsp-config> - jsp에 관련된 여러가지 설정을 하기위한 태그입니다.
+	<jsp-property-group> - 하나의 설정을 지정하기 위한 그룹 태그입니다. (특정 패턴에 대해 특정 설정을 하기 위한 단위)
+	<url-pattern> - 설정을 적용할 대상을 패턴으로 지정합니다. *.jsp로 지정시 모든 jsp 파일에 설정이 적용됩니다.
+	<include-prelude> - 패턴에 해당하는 JSP페이지의 맨 앞 부분에 include 될 JSP를 지정합니다.
+	<include-coda> - 패턴에 해당하는 JSP페이지의 맨 뒷 부분에 include 될 JSP를 지정합니다.
+ -->
+
+
+</web-app>

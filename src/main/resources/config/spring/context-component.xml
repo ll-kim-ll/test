@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+
+	<!-- 여러개 할 경우 base-package="com.wellrising.uds,com.wellrising" 처럼 , 구분 -->
+	<context:component-scan base-package="com.wellrising.uds" >
+		<context:include-filter type="annotation" expression="org.springframework.stereotype.Service"/>
+		<context:include-filter type="annotation" expression="org.springframework.stereotype.Component"/>
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+	</context:component-scan>
+	<!-- use-default-filters가
+		true인 경우
+			com.wellrising.uds 하위에 존재하는 Controller, Service, Repository, Component 등의 모든 Annotaion이 선언된 클래스들을 자동으로 스캔하여 빈으로 등록해준다.
+	     false인 경우
+			스캔은 하긴 하는데 아무것도 등록 안한다. 그래서 include-filter를 따로 줘서 include-filter의 패턴에 맞는 빈들만 등록한다.  -->
+<!--
+	<context:component-scan base-package="kr.go.portmis.sys" use-default-filters="false">
+		<context:include-filter type="annotation" expression="org.springframework.stereotype.Service"/>
+		<context:include-filter type="annotation" expression="org.springframework.stereotype.Component"/>
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+	</context:component-scan>
+	<context:component-scan base-package="kr.go.portmis.biz" use-default-filters="false">
+		<context:include-filter type="annotation" expression="org.springframework.stereotype.Service"/>
+		<context:include-filter type="annotation" expression="org.springframework.stereotype.Component"/>
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+	</context:component-scan>
+-->
+	<!-- 	<context:component-scan base-package="kr.go.portmis" use-default-filters="false"> -->
+	<!-- 		<context:include-filter type="annotation" expression="org.springframework.stereotype.Service"/> -->
+	<!-- 		<context:include-filter type="annotation" expression="org.springframework.stereotype.Component"/> -->
+	<!-- 		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/> -->
+	<!-- 	</context:component-scan> -->
+ </beans>

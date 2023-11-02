@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+	<settings>
+		<setting name="mapUnderscoreToCamelCase" value="true"/>
+		<setting name="jdbcTypeForNull" value="VARCHAR" />
+		<setting name="logImpl" value="LOG4J"/>  <!-- log4j log setting  -->
+	</settings>
+    <typeAliases>
+		<typeAlias alias="cmap" type="com.wellrising.uds.core.comm.ConvertUnderscoreNameToPropertyName"/>
+		<typeAlias alias="sampleVo" type="com.wellrising.uds.www.sample.logicSample.service.SampleVo"/>
+
+		<!-- 시큐리티 -->
+		<typeAlias alias="userInfoVO" type="com.wellrising.uds.www.sample.securitySample.service.UserInfoVO"/>
+		<typeAlias alias="userDetailsVO" type="com.wellrising.uds.www.sample.securitySample.service.UserDetailsVO"/>
+		<!-- 파일 -->
+		<typeAlias alias="fileVO" type="com.wellrising.uds.util.file.service.WRFileVO"/>
+
+
+    </typeAliases>
+</configuration>

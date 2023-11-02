@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="m1DeviceList">
+	<sql id = "pageBefore">
+		<![CDATA[
+		SELECT * FROM (
+			SELECT ROWNUM RN, Z.* FROM (
+		]]>
+    </sql>
+
+    <sql id = "pageEnd">
+		<![CDATA[
+			) Z ) WHERE rn BETWEEN #{firstIndex} + 1 AND #{firstIndex} + #{recordCountPerPage}
+		]]>
+    </sql>
+
+<!-- 	<select id="selectRouterList" parameterType="String" resultType="cmap"> -->
+	<select id="selectRouterList" resultType="cmap">
+		<![CDATA[
+			SELECT EQPMN_ID AS CODE
+			      , EQPMN_ID AS VALUE
+			 FROM ROUTER_DEVICE_INFO
+		 ]]>
+	</select>
+
+<!-- 라우터 리스트 -->
+	<select id="selectRouterDataList" parameterType="cmap" resultType="cmap">
+		/* id : selectRouterDataList 라우터 리스트*/
+		<include refid = "pageBefore" />
+		<![CDATA[
+			SELECT A.*
+			       , COUNT(*) OVER () AS TOTAL_COUNT
+			    FROM ROUTER_DEVICE_INFO A
+		 ]]>
+		 <include refid = "pageEnd" />
+	</select>
+
+<!-- 라우터 클라이언트 리스트, 파라미터 : 라우터 ID-->
+	<select id="selectClientList" parameterType="String" resultType="cmap">
+		/* id : selectClientList 라우터 클라이언트 리스트*/
+		<![CDATA[
+			SELECT NO AS CODE
+			      , EQPMN_NM AS VALUE
+			 FROM CLIENT_DEVICE_INFO
+			WHERE EQPMN_ID = #{filter}
+			  AND USE_AT = '1'
+		 ]]>
+	</select>
+
+
+	<!-- 공통코드 조회 -->
+	<select id="selectSample1" parameterType="cmap" resultType="cmap">
+		<![CDATA[
+			SELECT CODE AS CODE
+			      , CODE_NM AS VALUE
+			 FROM COMTCCMMNCODE
+			WHERE CL_CODE = #{opt}
+		 ]]>
+	</select>
+
+	<!-- 1~3단 콤보박스 데이터 조회 -->
+	<select id="selectSample2" parameterType="cmap" resultType="cmap">
+		<![CDATA[
+			SELECT NO AS CODE
+			      , EQPMN_NM AS VALUE
+			 FROM CLIENT_DEVICE_INFO
+			WHERE EQPMN_ID = #{filter}
+			WHERE NO = #{parentFilter}
+			  AND USE_AT = '1'
+		 ]]>
+	</select>
+
+	<select id="selectDeviceList" resultType="cmap">
+		<![CDATA[
+			SELECT DISTINCT EQPMN_ID AS CODE
+			      , EQPMN_ID AS VALUE
+			 FROM DEVICE_INFO
+		 ]]>
+	</select>
+
+
+
+</mapper>
+

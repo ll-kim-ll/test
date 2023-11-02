@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="m1EnvironmentInfo">
+	<sql id = "pageBefore">
+		<![CDATA[
+		SELECT * FROM (
+			SELECT ROWNUM RN, Z.* FROM (
+		]]>
+    </sql>
+
+    <sql id = "pageEnd">
+		<![CDATA[
+			) Z ) WHERE rn BETWEEN #{firstIndex} + 1 AND #{firstIndex} + #{recordCountPerPage}
+		]]>
+    </sql>
+
+<!-- 환경정보 리스트 -->
+	<select id="selectEnvironmentInfo" parameterType="cmap" resultType="cmap">
+		/* id : selectEnvironmentInfo 라우터 리스트*/
+		<include refid = "pageBefore" />
+		<![CDATA[
+			SELECT TO_CHAR(TRNSMIS_DE,'YYYY-MM-DD') AS TRNSMIS_DE
+				   , SEQ
+				   , EQPMN_ID
+				   , NO
+				   , TP
+				   , HD
+				   , MINU_DUST_1
+				   , MINU_DUST_2
+				   , FORMALDEHYDE
+				   , OXGN
+				   , CMO
+				   , TO_CHAR(TRNSMIS_TIME,'YYYY-MM-DD HH24:MI:SS') AS TRNSMIS_TIME
+				   , RGSUSR
+				   , TO_CHAR(RGSDE,'YYYY-MM-DD HH24:MI') AS RGSDE
+				   , UPDUSR
+				   , TO_CHAR(UPDDE,'YYYY-MM-DD HH24:MI') AS UPDDE
+			       , COUNT(*) OVER () AS TOTAL_COUNT
+			    FROM ENVIRONMENT_INFO A
+			 WHERE 1=1
+		]]>
+			   <if test='searchDevice !=null and searchDevice !=""'>
+				   AND EQPMN_ID = #{searchDevice}
+			   </if>
+			   <if test='searchRouter !=null and searchRouter !=""'>
+				   AND EQPMN_ID = #{searchRouter}
+			   </if>
+			   <if test='searchClient !=null and searchClient !=""'>
+				   AND NO = #{searchClient}
+			   </if>
+			   <if test='searchDtFrom !=null and searchDtFrom !=""
+			           and searchDtTo !=null and searchDtTo !=""'>
+				   AND RGSDE BETWEEN TO_DATE(#{searchDtFrom}, 'YYYY-MM-DD') and TO_DATE(#{searchDtTo}, 'YYYY-MM-DD')+1
+			   </if>
+			   ORDER BY  RGSDE DESC, EQPMN_ID, SEQ
+		 <include refid = "pageEnd" />
+	</select>
+
+</mapper>
+

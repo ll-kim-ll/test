@@ -1,0 +1,152 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport"
+			content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<title>Welcome to Codevang</title>
+
+		<style>
+			#topMenu {
+				margin-top : 10px;
+				float: right;
+			}
+
+			ul#nav3 li {
+				margin-left:10px;
+				list-style-type: none;
+				float: right;
+			}
+
+		</style>
+
+		<sec:csrfMetaTags />
+		<!-- 로그인 되어 있을때 csrf 토큰 사용, 비로그인 처리 할 경우 jsp 페이지  <sec:csrfMetaTags /> 추가 하면 됨.-->
+<!--  		<sec:authorize access="isAuthenticated()"> -->
+			<!-- csrf 처리 -->
+<!-- 			<sec:csrfMetaTags />
+ -->
+
+<!--  <sec:csrfMetaTags /> 사용시 아래 내용 생성됨, 스크립트에서
+			<meta name="_csrf_parameter" content="_csrf">
+			<meta name="_csrf_header" content="X-CSRF-TOKEN">
+			<meta name="_csrf" content="d3b30371-08a9-4621-bb00-5dc98c1d18d9">
+ -->
+			<script>
+// wellrisinglib.js 라이브러리 setCsrfToken() 처리
+/*
+				try {
+					var csrfParameter = $("meta[name='_csrf_parameter']").attr("content");
+					var csrfHeader = $("meta[name='_csrf_header']").attr("content");
+					var csrfToken = $("meta[name='_csrf']").attr("content");
+
+					// ajax가 호출 되는 전역
+					$.ajaxSetup({
+						beforeSend: function(xhr, settings) {
+							if (!/^(GET|HEAD|OPTIONS)$/i.test(settings.type) && !this.crossDomain) {
+								xhr.setRequestHeader(csrfHeader, csrfToken)
+							}
+						}
+					});
+					// form
+					$("form").each(function() {
+						var input = $("<input/>").attr({type:"hidden", name:csrfParameter, value:csrfToken});
+						$(this).append(input);
+						$(this).append($('<input/>',{type:'hidden', name:csrfParameter, value:csrfToken}));
+					});
+				} catch(e) {
+					console.log(e);
+				}
+*/
+			</script>
+			<!-- csrf 처리 -->
+<!--  		</sec:authorize>
+-->
+
+		<script>
+			console.log("topLayout => topLayout.jspd");
+			var pageIndex = 1;
+			/*********************************
+			* 메뉴 하이라이트 처리
+			 *********************************/
+			$(document).ready(function() {
+				console.log("subMenu active");
+
+				// 메뉴 엑티브 처리
+				var menuNm = '<c:url value="${menuNm}" />';
+
+				$("#subMenu").find("a").each(function() {
+					$(this).removeClass("active");
+					if($(this).text() == menuNm){
+						$(this).addClass("active");
+					}
+				});
+			});
+
+			function customLogout(){
+				$.post("<c:url value='/customLogout.do'/>");
+			}
+		</script>
+
+
+	</head>
+
+	<!-- 네비바를 fiexd-top으로 설정했을 때 컨텐츠와 겹치는 문제 방지 -->
+	<body class="pt-5">
+		<input type="hidden" id="context_root" value="${pageContext.request.contextPath}"/>
+
+		<!-- Navigation -->
+		<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+			<div class="container">
+				<a class="navbar-brand" href="<c:url value='/' />">WELL RISING</a>
+				<div id="topMenu" class="collapse navbar-collapse" >
+					<ul id="nav3" class="">
+
+						<!-- 인증하지 않은 상태 -->
+						<sec:authorize access="isAnonymous()">
+							<li class=""> <a class="nav-link" href="#">회원가입</a> </li>
+							<li class=""> <a class="nav-link" href="<c:url value='/login/loginPage.do' />">로그인</a> </li>
+						</sec:authorize>
+						<!-- 인증 상태 -->
+						<sec:authorize access="isAuthenticated()">
+							<li class=""> <a class="nav-link" href="<c:url value='/'/>" onclick="return customLogout()">로그아웃</a> </li>
+							<li class="">
+								<sec:authentication property="principal.name"/>님 환영합니다
+							</li>
+					   	</sec:authorize>
+						<li class=""> <a class="nav-link" href="<c:url value='/' />">홈</a> </li>
+					</ul>
+				</div>
+			</div>
+		</nav>
+
+		<!-- Page Content -->
+		<div id="wrapper_full" class="container">
+			<div class="row">
+				<div id="subMenu" class="col-lg-3">
+					<h3 class="my-4 text-center">이미지 부분</h3>
+					<div id="subMenu" class="list-group mb-4">
+
+						<a href="<c:url value='/member/dashboard.do' />" class="list-group-item list-group-item-info text-center font-weight-bold ">고객 전용</a>
+						<a href="<c:url value='/member/dashboard.do' />" class="list-group-item list-group-item-action text-center font-weight-bold ">대시보드</a>
+<!--
+						<a href="<c:url value='/device/commandRouter.do' />" class="list-group-item list-group-item-action text-center font-weight-bold">라우터 설정</a>
+						<a href="<c:url value='/device/commandClient.do' />" class="list-group-item list-group-item-action text-center font-weight-bold">클라언트 설정</a>
+-->
+						<a href="<c:url value='/device/commandDevice.do' />" class="list-group-item list-group-item-action text-center font-weight-bold">디바이스 설정</a>
+						<a href="<c:url value='/device/environmentInfo.do' />" class="list-group-item list-group-item-action text-center font-weight-bold">환경정보 조회</a>
+						<a href="<c:url value='/device/alramEvent.do' />" class="list-group-item list-group-item-action text-center font-weight-bold">이벤트 조회</a>
+						<a href="<c:url value='/' />" class="list-group-item list-group-item-action text-center font-weight-bold">통계</a>
+
+						<a href="<c:url value='/admin/device.do' />" class="list-group-item list-group-item-info text-center font-weight-bold ">관리자용</a>
+						<a href="<c:url value='/admin/device.do' />" class="list-group-item list-group-item-action text-center font-weight-bold">장치 조회</a>
+						<a href="<c:url value='/admin/environmentBase.do' />" class="list-group-item list-group-item-action text-center font-weight-bold">환경 기본정보 조회</a>
+						<a href="<c:url value='/admin/firmware.do' />" class="list-group-item list-group-item-action text-center font-weight-bold">펌웨어 설정</a>
+					</div>
+				</div>
+				<!-- /.col-lg-3 -->
+				<div id="page-wrapper" class="col-lg-9 my-4 mb-4">
+					<!-- 여기서부터 본문내용, 이후 코드는 bottomLayout에서 마무리 -->
+

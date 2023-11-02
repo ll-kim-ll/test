@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="m1DeviceCommandRouter">
+	<!-- 페이지 처리 부분 선언 -->
+	<sql id = "sqlStart">
+		<![CDATA[
+		SELECT * FROM (
+			SELECT ROWNUM RN, Z.* FROM (
+		]]>
+    </sql>
+
+    <sql id = "sqlEnd">
+		<![CDATA[
+			) Z ) WHERE rn BETWEEN #{firstIndex} + 1 AND #{firstIndex} + #{recordCountPerPage}
+		]]>
+    </sql>
+
+   	<sql id = "routerMax">
+		<![CDATA[
+		SELECT NVL(MAX(SEQ),0)+1
+		  FROM ROUTER_DEVICE_SETUP
+		]]>
+    </sql>
+	<!-- 페이지 처리 부분 선언 끝 -->
+
+	<!-- 라우터 명령 조회 -->
+	<select id="selectCommandRouterList" parameterType="cmap" resultType="cmap">
+		<include refid = "sqlStart" />
+		<![CDATA[
+			SELECT  SEQ,
+				    EQPMN_ID,
+				    TRNSMIS_SECND,
+				    REFLCT_AT,
+				    RM,
+				    RGSUSR,
+				    TO_CHAR(RGSDE, 'YYYY-MM-DD HH24:MI:SS') AS RGSDE,
+				    UPDUSR,
+				    TO_CHAR(UPDDE, 'YYYY-MM-DD HH24:MI:SS') AS UPDDE,
+				    COUNT(*) OVER () AS TOTAL_COUNT
+			  FROM  ROUTER_DEVICE_SETUP
+			 WHERE 1=1
+		]]>
+			   <if test='searchRouter !=null and searchRouter !=""'>
+				   AND EQPMN_ID = #{searchRouter}
+			   </if>
+			   <if test='searchReflctAt !=null and searchReflctAt !=""'>
+				   AND REFLCT_AT = #{searchReflctAt}
+			   </if>
+
+			   <if test='searchDtFrom !=null and searchDtFrom !=""
+			           and searchDtTo !=null and searchDtTo !=""'>
+				   AND RGSDE BETWEEN TO_DATE(#{searchDtFrom}, 'YYYY-MM-DD') and TO_DATE(#{searchDtTo}, 'YYYY-MM-DD')+1
+			   </if>
+			   ORDER BY RGSDE DESC
+<!--
+		<![CDATA[
+			   AND RGSDE > SYSDATE - 1/24
+		]]>
+ -->
+		<include refid = "sqlEnd" />
+	</select>
+
+	<insert id="insertCommandRouter">
+		<![CDATA[
+			insert into ROUTER_DEVICE_SETUP (SEQ,
+										    EQPMN_ID,
+										    TRNSMIS_SECND,
+										    REFLCT_AT,
+										    RM,
+										    RGSUSR,
+										    RGSDE,
+										    UPDUSR,
+										    UPDDE
+										    )
+									VALUES(
+		]]>
+											(<include refid="routerMax"/>),
+		<![CDATA[
+											#{eqpmnId},
+										    #{trnsmisSecnd},
+										    'N',
+										    #{rm},
+										    #{C_USER},
+										    SYSDATE,
+										    #{C_USER},
+										    SYSDATE
+									)
+		]]>
+
+
+	</insert>
+
+</mapper>
+

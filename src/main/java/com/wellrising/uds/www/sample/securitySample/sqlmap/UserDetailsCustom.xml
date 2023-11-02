@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="userDetailsCustom">
+
+	<select id="selectUserInfoOne" parameterType="String" resultType="userInfoVO">
+		SELECT *
+			FROM MEMBER
+		WHERE USERID = #{inputUserId}
+	</select>
+
+	<select id="selectUserAuthOne" parameterType="String" resultType="String">
+		SELECT AUTH
+			FROM MEMBER_AUTH
+		WHERE USERID = #{inputUserId}
+	</select>
+
+	<!-- 사용자 및 권한 조회 -->
+	<select id="getUserById" parameterType="String" resultType="cmap">
+		SELECT mem.userid, mem.userpw, mem.username, mem.ENABLED, auth.auth
+			FROM MEMBER mem
+			LEFT OUTER JOIN MEMBER_auth auth
+			on mem.userid = auth.userid
+		WHERE mem.userid = #{userid}
+	</select>
+
+	<!-- 사용자 등록 -->
+	<insert id="registerUserInfo" parameterType="userInfoVO">
+		INSERT INTO MEMBER(userid, userpw, username, ENABLED)
+		VALUES( #{userid} , #{userpw} , #{username} , 1)
+	</insert>
+
+	<!-- 사용자 권한 등록 -->
+	<insert id="registerUserAuth" parameterType="userInfoVO">
+		INSERT INTO MEMBER_auth(userid, AUTH)
+		VALUES( #{userid} , #{authority})
+	</insert>
+
+</mapper>
+

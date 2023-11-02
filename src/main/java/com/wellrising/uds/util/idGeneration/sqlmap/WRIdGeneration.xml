@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="wRIdGeneration">
+	<!-- id 조회 조회 -->
+	<select id="selectIdGeneration" parameterType="String" resultType="cmap">
+		/* id : selectIdGeneration 고유 ID 조회 */
+		<![CDATA[
+			SELECT table_name,
+    				next_id
+			  FROM  COMTECOPSEQ
+			 WHERE 1=1
+			   AND TABLE_NAME = #{tableName}
+		]]>
+	</select>
+
+	<!-- 키 업데이트 조회 -->
+	<update id="updateIdGeneration" parameterType="cmap" >
+		/* id : selectIdGeneration 고유 ID 조회 */
+		<![CDATA[
+			UPDATE COMTECOPSEQ
+			   SET NEXT_ID = (SELECT MAX(NEXT_ID)+1
+								FROM COMTECOPSEQ
+							   WHERE TABLE_NAME = #{tableName}
+							 )
+			 WHERE 1=1
+			   AND TABLE_NAME = #{tableName}
+		]]>
+		<selectKey keyProperty="nextId" resultType="cmap" order="AFTER">
+	  		SELECT TO_CHAR(NEXT_ID) AS NEXT_ID
+			 FROM COMTECOPSEQ
+			 WHERE TABLE_NAME = #{tableName}
+		</selectKey>
+	</update>
+</mapper>
+

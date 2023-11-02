@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="m1Monitoring">
+	<sql id = "pageBefore">
+		<![CDATA[
+		SELECT * FROM (
+			SELECT ROWNUM RN, Z.* FROM (
+		]]>
+    </sql>
+
+    <sql id = "pageEnd">
+		<![CDATA[
+			) Z ) WHERE rn BETWEEN #{firstIndex} + 1 AND #{firstIndex} + #{recordCountPerPage}
+		]]>
+    </sql>
+
+<!-- 통계 리스트 -->
+	<select id="selectMonitoring" parameterType="cmap" resultType="cmap">
+		/* id : selectRouterDataList 라우터 리스트*/
+		<include refid = "pageBefore" />
+		<![CDATA[
+			SELECT 1
+			    FROM DUAL
+		 ]]>
+		 <include refid = "pageEnd" />
+	</select>
+
+
+<!-- 통계 테이블 구조 -->
+	<select id="selectMinuteMonitoring" parameterType="cmap" resultType="cmap">
+		<![CDATA[
+			SELECT *
+			  FROM (SELECT EQPMN_ID
+							, TRUNC(AVG(MINU_DUST_1),1) AS MINU_DUST_1
+							, TRUNC(AVG(MINU_DUST_2),1) AS MINU_DUST_2
+							FROM ENVIRONMENT_INFO
+							WHERE TRNSMIS_TIME BETWEEN SYSDATE + (1/1440*-10) AND SYSDATE
+							GROUP BY EQPMN_ID
+			 		) A
+			 ORDER BY A.EQPMN_ID
+		 ]]>
+	</select>
+
+
+<!-- 통계 시간별 통계 -->
+	<select id="selectHourMonitoring" parameterType="cmap" resultType="cmap">
+		<![CDATA[
+			SELECT EQPMN_ID
+			        , NVL(ROUND("00", 1), 0) AS "00"
+			        , NVL(ROUND("01", 1), 0) AS "01"
+			        , NVL(ROUND("02", 1), 0) AS "02"
+			        , NVL(ROUND("03", 1), 0) AS "03"
+			        , NVL(ROUND("04", 1), 0) AS "04"
+			        , NVL(ROUND("05", 1), 0) AS "05"
+			        , NVL(ROUND("06", 1), 0) AS "06"
+			        , NVL(ROUND("07", 1), 0) AS "07"
+			        , NVL(ROUND("08", 1), 0) AS "08"
+			        , NVL(ROUND("09", 1), 0) AS "09"
+			        , NVL(ROUND("10", 1), 0) AS "10"
+			        , NVL(ROUND("11", 1), 0) AS "11"
+			        , NVL(ROUND("12", 1), 0) AS "12"
+			        , NVL(ROUND("13", 1), 0) AS "13"
+			        , NVL(ROUND("14", 1), 0) AS "14"
+			        , NVL(ROUND("15", 1), 0) AS "15"
+			        , NVL(ROUND("16", 1), 0) AS "16"
+			        , NVL(ROUND("17", 1), 0) AS "17"
+			        , NVL(ROUND("18", 1), 0) AS "18"
+			        , NVL(ROUND("19", 1), 0) AS "19"
+			        , NVL(ROUND("20", 1), 0) AS "20"
+			        , NVL(ROUND("21", 1), 0) AS "21"
+			        , NVL(ROUND("22", 1), 0) AS "22"
+			        , NVL(ROUND("23", 1), 0) AS "23"
+			  FROM (
+			SELECT EQPMN_ID
+			        , TO_CHAR(TRNSMIS_TIME, 'HH24') AS TIME
+			       , MINU_DUST_2 AS MINU_DUST_2
+			  FROM ENVIRONMENT_INFO
+			 WHERE TRNSMIS_TIME BETWEEN TRUNC(SYSDATE) AND TRUNC(SYSDATE)+1
+			   AND EQPMN_ID = 3100001361
+			        )
+			 PIVOT (
+			         AVG(MINU_DUST_2)
+			         FOR TIME IN ('00' AS "00", '01' AS "01", '02' AS "02", '03' AS "03", '04' AS "04", '05' AS "05",'06' AS "06", '07' AS "07", '08' AS "08", '09' AS "09", '10' AS "10", '11' AS "11"
+			                        , '12' AS "12", '13' AS "13", '14' AS "14", '15' AS "15", '16' AS "16", '17' AS "17", '18' AS "18", '19' AS "19", '20' AS "20", '21' AS "21", '22' AS "22", '23' AS "23")
+			       )
+		 ]]>
+	</select>
+
+<!-- 통계 주별 통계 -->
+	<select id="selectWeekMonitoring" parameterType="cmap" resultType="cmap">
+		<![CDATA[
+			SELECT *
+			  FROM (SELECT EQPMN_ID
+			--        , TRUNC(TRNSMIS_TIME) as TRNSMIS_date
+			        , TO_CHAR(TRNSMIS_TIME,'YYYY-MM-DD') as TRNSMIS_date
+			        , TO_CHAR(TRNSMIS_TIME,'day') as week
+			        , TRUNC(AVG(TP),1) AS TP
+			       , TRUNC(AVG(HD),1) AS HD
+			       , TRUNC(AVG(OXGN),1) AS OXGN
+			       , TRUNC(AVG(CMO),1) AS CMO
+			       , TRUNC(AVG(FORMALDEHYDE),1) AS FORMALDEHYDE
+			       , TRUNC(AVG(MINU_DUST_1),1) AS MINU_DUST_1
+			       , TRUNC(AVG(MINU_DUST_2),1) AS MINU_DUST_2
+			  FROM ENVIRONMENT_INFO
+			 WHERE TRNSMIS_TIME BETWEEN TRUNC(sysdate,'d')+1 AND TRUNC(sysdate,'d')+8
+			 GROUP BY EQPMN_ID, TO_CHAR(TRNSMIS_TIME,'YYYY-MM-DD'), TO_CHAR(TRNSMIS_TIME,'day')
+			 ) A
+			 ORDER BY A.EQPMN_ID, a.TRNSMIS_date
+		]]>
+	</select>
+
+<!-- 통계 월별 통계 -->
+	<select id="selectMonthMonitoring" parameterType="cmap" resultType="cmap">
+		<![CDATA[
+			SELECT *
+			  FROM (SELECT EQPMN_ID
+			        , TO_CHAR(TRNSMIS_TIME,'YYYY-MM') as TRNSMIS_date
+			--        , TRUNC(TRNSMIS_TIME, 'MM') as TRNSMIS_date
+			        , TO_CHAR(TRNSMIS_TIME,'MM') as Month
+			        , TRUNC(AVG(TP),1) AS TP
+			       , TRUNC(AVG(HD),1) AS HD
+			       , TRUNC(AVG(OXGN),1) AS OXGN
+			       , TRUNC(AVG(CMO),1) AS CMO
+			       , TRUNC(AVG(FORMALDEHYDE),1) AS FORMALDEHYDE
+			       , TRUNC(AVG(MINU_DUST_1),1) AS MINU_DUST_1
+			       , TRUNC(AVG(MINU_DUST_2),1) AS MINU_DUST_2
+			  FROM ENVIRONMENT_INFO
+			 WHERE TRNSMIS_TIME BETWEEN TRUNC(sysdate,'d')+1 AND TRUNC(sysdate,'d')+7
+			 GROUP BY EQPMN_ID, TO_CHAR(TRNSMIS_TIME,'YYYY-MM'), TO_CHAR(TRNSMIS_TIME,'MM')
+			 ) A
+			 ORDER BY A.EQPMN_ID, a.TRNSMIS_date
+		]]>
+	</select>
+
+
+</mapper>
+

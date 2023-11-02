@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN"
+       "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
+
+<tiles-definitions>
+	<!-- main layout -->
+	<definition name="layout-user-tiles1" template="/WEB-INF/views/sample/tiles/tilesLayout.jsp">
+		<put-attribute name="title"  value="WellRising"/>
+		<put-attribute name="header" value="/WEB-INF/views/sample/tiles/tilesHeaderTemplate.jsp" />
+		<put-attribute name="left" value="/WEB-INF/views/sample/tiles/tilesSidebarTemplate.jsp" />
+		<put-attribute name="body" value="" />
+		<put-attribute name="foot" value="/WEB-INF/views/sample/tiles/tilesFooterTemplate.jsp" />
+	</definition>
+
+	<!-- main layout 메뉴 추가 -->
+		<definition name="layout-user-tiles2" template="/WEB-INF/views/sample/tiles/tilesLayout.jsp"
+ 	            preparer = "com.wellrising.uds.www.sample.tiles.TilesMenuPreparer">
+<!-- 	            preparer = "menuPreparer">  com.wellrising.uds.www.sample.tilesMenu.MenuPreparer 클래스 @Component("menuPreparer") 추가 했기 때문에 축약 사용 -->
+		<put-attribute name="title"  value="WellRising"/>
+		<put-attribute name="header" value="/WEB-INF/views/sample/tiles/tilesHeaderTemplate.jsp" />
+		<put-attribute name="left" value="/WEB-INF/views/sample/tiles/tilesSidebarTemplate.jsp" />
+		<put-attribute name="body" value="" />
+		<put-attribute name="foot" value="/WEB-INF/views/sample/tiles/tilesFooterTemplate.jsp" />
+	</definition>
+<!--
+	<definition name="*/*" extends="layout-user-tiles">
+		<put-attribute name="body" value="/WEB-INF/views/{1}/{2}.jsp" />
+		<put-attribute name="title" value="" />
+		<put-list-attribute name="links">
+	        <add-attribute value="/resource/css/demo.min.css" />
+	    </put-list-attribute>
+	    <put-list-attribute name="scripts">
+	        <add-attribute value="/resource/js/AssetsSalePresent.js" />
+	    </put-list-attribute>
+	</definition>
+ -->
+	<definition name="user/*" extends="layout-user-tiles2">
+		<put-attribute name="body" value="/WEB-INF/views/sample/tiles/user/layouts/{1}.jsp" />
+		<put-attribute name="title" value="" />
+	</definition>
+
+	<definition name="sample/*/*" extends="layout-sample-tiles2">
+		<put-attribute name="body" value="/WEB-INF/views/sample/tiles/user/layouts/{1}/{2}.jsp" />
+		<put-attribute name="title" value="" />
+	</definition>
+
+	<!-- popup layout -->
+	<definition name="popup-user-layout" template="/resource/layout/popup.jsp">
+		<put-attribute name="body" value="" />
+	</definition>
+	<definition name="user/popup/*" extends="popup-user-layout">
+		<put-attribute name="body" value="/WEB-INF/views/tiles/sample/user/layouts/popup/{1}.jsp" />
+	</definition>
+
+</tiles-definitions>

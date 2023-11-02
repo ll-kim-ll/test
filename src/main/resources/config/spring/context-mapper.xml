@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:mybatis-spring="http://mybatis.org/schema/mybatis-spring"
+	xsi:schemaLocation="http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring-1.2.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
+
+	<!-- SqlSession setup for MyBatis Database Layer -->
+	 <bean id="sqlsessionfactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+	 	<property name="dataSource" ref="default.dataSource"/>
+	 	<!-- context-datasource alias -->
+<!-- 	 	<property name="dataSource" ref="dataSource"/> -->
+
+		<property name="configLocation" value="classpath:config/sqlmap/sql-mapper-config.xml" />
+		<property name="mapperLocations">
+			<list>
+				<value>classpath*:mappers/**/*_Oracle.xml</value>
+				<value>classpath*:com/wellrising/uds/**/sqlmap/*.xml</value>
+			</list>
+		</property>
+
+	 </bean>
+
+	<bean id="default.sqlsession" class="com.wellrising.uds.core.service.DaoSqlSessionTemplate">
+		<constructor-arg index="0" ref="sqlsessionfactory"/>
+	</bean>
+
+
+<!-- SampleMapper 인터페이스 @Mapper 스캔을 위해서 꼭 사용해야함 아래의 2가지 중 하나 사용해야함.-->
+<!-- 	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+	  <property name="basePackage" value="com.wellrising.uds" />
+	</bean>
+ -->
+	<!-- 메퍼 스캔 오류 해결 -->
+ 	<mybatis-spring:scan base-package="com.wellrising.uds"/>
+
+</beans>

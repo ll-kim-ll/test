@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+		http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+
+<!-- transactionManager bean 설정 -->
+	<bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="default.dataSource"/>
+	 	<!-- context-datasource alias -->
+<!-- 	 	<property name="dataSource" ref="dataSource"/> -->
+	</bean>
+
+	<!-- @Transactional 어노테이션 처리 -->
+	<!-- Annotation을 사용하여 트랜잭션 사용시 활성화 -->
+<!-- 	<tx:annotation-driven transaction-manager="txManager" /> -->
+ 	<tx:annotation-driven proxy-target-class="true"/>
+
+<!-- transactionManager 적용 범위 지정(advice) -->
+	<tx:advice id="txAdvice" transaction-manager="txManager">
+		<tx:attributes>
+			<tx:method name="*" propagation="REQUIRED" rollback-for="Exception"/>
+<!--
+			<tx:method name="get*" read-only="true" rollback-for="Exception" />
+			<tx:method name="select*" read-only="true" rollback-for="Exception" />
+			<tx:method name="insert*" read-only="false" propagation="REQUIRED" rollback-for="Exception"/>
+			<tx:method name="update*" read-only="false" propagation="REQUIRED" rollback-for="Exception"/>
+			<tx:method name="delete*" read-only="false" propagation="REQUIRED" rollback-for="Exception"/>
+-->
+		</tx:attributes>
+	</tx:advice>
+
+<!-- transactionManager pointcut AOP 설정  -->
+	<aop:config proxy-target-class="true">
+		<aop:pointcut id="requiredTx" expression="execution(* com.wellrising.uds..*Service.*(..))"/>
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="requiredTx" />
+	</aop:config>
+	<!-- execution(* com.wellrising.uds..*Service.*(..)) 클래스 메소드 단위로 ..(모든대상) -->
+
+</beans>

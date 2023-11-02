@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:s="http://www.springframework.org/schema/security"
+	xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+<!-- 로그인성공시 인터페이스 구현 (객체등록) -->
+	<bean id="customLoginSuccess" class="com.wellrising.uds.www.sample.securitySample.service.CustomLoginSuccessHandler"></bean>
+
+	<s:http auto-config="true" use-expressions="true">
+
+		<!-- 정적 리소스는 모두 접근 허용 -->
+		<s:intercept-url pattern="/resources/**" access="permitAll" />
+		<s:intercept-url pattern="/index.do" access="permitAll" />
+		<s:intercept-url pattern="/login/**" access="permitAll" />
+		<s:intercept-url pattern="/users/**" access="permitAll" />
+
+
+		<!-- 로그인된 상태에서는 로그인이나 회원가입 화면에 접근 못하도록 함 -->
+		<s:intercept-url pattern="/loginView.do" access="isAnonymous()" />
+		<s:intercept-url pattern="/registerUserView.do" access="isAnonymous()" />
+
+		<!-- 관리자페이지는 관리자만 접근 허용 -->
+		<s:intercept-url pattern="/admin/**/*.do" access="hasRole('ROLE_ADMIN')" />
+		<s:intercept-url pattern="/**" access="hasRole('ROLE_ADMIN')" />
+
+
+
+
+		<!-- 로그인 설정 -->
+		<s:form-login
+			username-parameter="userid"
+			password-parameter="userpw"
+			login-processing-url="/login.do"
+			login-page="/login/loginPage.do" default-target-url="/"
+			authentication-success-handler-ref="customLoginSuccess"
+			authentication-failure-url="/login/loginPage.do?err=true" />
+<!--
+* username-parameter : 입력한 ID에 대한 파라미터 네임
+* password-parameter : 입력한 PW에 대한 파라미터 네임
+* login-processing-url : View 페이지의 <form action="/url"> 에서 지정한 URL
+* login-page : 서블릿에 넘겨줄 로그인 페이지 URL
+* default-target-url : 로그인에 성공하면 보내줄 페이지
+* authentication-failure-url : 로그인에 실패하면 보내줄 페이지
+-->
+		<!-- 로그아웃 설정 -->
+		<s:logout
+			logout-url="/logout.do"
+			logout-success-url="/"
+			invalidate-session="true"
+			delete-cookies="true" />
+<!--
+* logout-url : 로그아웃 요청에 대한 URL (버튼 눌렀을 때 발생하는 요청 URL)
+* logout logout-success-url : 로그아웃 완료되면 보내줄 URL
+* invalidate-session : 세션 삭제 여부
+* delete-cookies : 쿠키 삭제 여부
+-->
+
+		<!-- 권한이 없어서 금지된 URI 접속할 때 보여줄 페이지(403 에러 페이지 대체) -->
+		<s:access-denied-handler error-page="/login/accessDenied.do" />
+
+	</s:http>
+
+	<bean id="bcryptPasswordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder" />
+
+	<!-- DB 연동 설정 -->
+	<s:authentication-manager>
+		<s:authentication-provider>
+			<s:password-encoder ref="bcryptPasswordEncoder"/>
+
+			<s:jdbc-user-service data-source-ref="dataSource"
+								users-by-username-query="SELECT USERID as USERNAME,
+								                                USERPW as PASSWORD,
+								                                1 as enabled
+														   FROM TBL_MEMBER
+														  WHERE USERID=?"
+								authorities-by-username-query="SELECT USERID as USERNAME,
+																	  AUTH AS authority
+																 FROM TBL_MEMBER_AUTH
+																WHERE USERID=?" />
+
+
+		</s:authentication-provider>
+
+	</s:authentication-manager>
+
+
+</beans>

@@ -1,0 +1,53 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="java.util.Calendar"%>
+<%@ page import="java.util.Date"%>
+<%@ page import="org.springframework.context.i18n.LocaleContextHolder"%>
+
+<%@ taglib prefix="c"      uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn"     uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="fmt"    uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="sec"		uri="http://www.springframework.org/security/tags" %>
+<%@ taglib prefix="form"   uri="http://www.springframework.org/tags/form" %>
+
+<!-- bootstrap CSS -->
+<%-- <link rel="stylesheet" href="<c:url value='/js/bootstrap/custom/css/bootstrap.min.css' />"> --%>
+
+<!-- bootstrap JS -->
+<%-- <script src="<c:url value='/js/bootstrap/custom/js/bootstrap.min.js' />"></script> --%>
+
+<!-- jquery JS -->
+<script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js" integrity="sha256-6XMVI0zB8cRzfZjqKcD01PBsAy3FlDASrlC8SxCpInY=" crossorigin="anonymous"></script>
+
+<!-- jquery JS UI-->
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.13.1/themes/redmond/jquery-ui.min.css">
+
+<!-- bootstrap CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+<!-- 부가적인 테마 -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+
+<!-- bootstrap JS -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+
+<!-- 공통 JS -->
+<script src="<c:url value='/js/wellrisinglib.js' />" ></script>
+<script src="<c:url value='/js/wellrisingAutoLib.js' />" ></script>
+<script src="<c:url value='/js/default.js' />"></script>
+
+<!--
+<script type="module" src="<c:url value='/js/export.js' />"></script>
+-->
+
+<!-- 공통 CSS -->
+<link rel="stylesheet" href="<c:url value='/css/default.css' />">
+<link rel="stylesheet" href="<c:url value='/css/wellrising.css' />">
+
+<%--
+<c:set var="context" value="<%=request.getContextPath()%>"></c:set> <!-- spring 스크립트 -->
+ --%>
+<c:set var="context" value="${pageContext.request.contextPath}"></c:set> <!-- EL 표현식 세팅 -->
+<c:set var="resources" value="${context}/resources" scope="application"/> <!-- servlet-context.xml /resources 정의해서 따로 안해줘도 사용 가능 -->
+

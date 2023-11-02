@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="sampleDao">
+
+	<select id="selectSampleVo" resultType="sampleVo">
+		SELECT USER_NUMBER, USER_ID, USER_NAME, PW
+		  FROM (SELECT '1' AS USER_NUMBER, 'TEST1' AS USER_ID, 'USER1' AS USER_NAME, 'PW1' AS PW FROM DUAL
+		        UNION ALL
+		        SELECT '2' AS USER_NUMBER, 'TEST2' AS USER_ID, 'USER2' AS USER_NAME, 'PW2' AS PW FROM DUAL
+		        UNION ALL
+		        SELECT '3' AS USER_NUMBER, 'TEST3' AS USER_ID, 'USER3' AS USER_NAME, 'PW3' AS PW FROM DUAL
+		        UNION ALL
+		        SELECT '4' AS USER_NUMBER, 'TEST4' AS USER_ID, 'USER4' AS USER_NAME, 'PW4' AS PW FROM DUAL
+		        )
+	</select>
+
+	<select id="selectSampleMap" resultType="cMap">
+		SELECT USER_NUMBER, USER_ID, USER_NAME, PW
+		  FROM (SELECT '1' AS USER_NUMBER, 'TEST1' AS USER_ID, 'USER1' AS USER_NAME, 'PW1' AS PW FROM DUAL
+		        UNION ALL
+		        SELECT '2' AS USER_NUMBER, 'TEST2' AS USER_ID, 'USER2' AS USER_NAME, 'PW2' AS PW FROM DUAL
+		        UNION ALL
+		        SELECT '3' AS USER_NUMBER, 'TEST3' AS USER_ID, 'USER3' AS USER_NAME, 'PW3' AS PW FROM DUAL
+		        UNION ALL
+		        SELECT '4' AS USER_NUMBER, 'TEST4' AS USER_ID, 'USER4' AS USER_NAME, 'PW4' AS PW FROM DUAL
+		        )
+	</select>
+
+
+</mapper>
+

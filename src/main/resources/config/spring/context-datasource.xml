@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
+
+<!-- context-properties.xml 처리 함.
+
+	<bean id="base.propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>classpath:/config/property/globals${spring.profiles.active}.properties</value>
+            </list>
+        </property>
+    </bean>
+-->
+
+	<!-- DataSource -->
+	<alias name="dataSource-${Globals.DbType}" alias="default.dataSource"/>
+    <alias name="dataSource-${Globals.DbType}" alias="dataSource"/>
+
+	<!-- Oracle -->
+<!--
+	base.propertyConfigurer 프로퍼티 불러온 값 사용(${Globals.DriverClassName})
+
+	<bean id="dataSource-oracle" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
+		<property name="driverClassName" value="${Globals.DriverClassName}"/>
+		<property name="url" value="${Globals.Url}" />
+		<property name="username" value="${Globals.UserName}"/>
+		<property name="password" value="${Globals.Password}"/>
+	</bean>
+-->
+	<!-- Oracle (context-base.xml 선언한 properties 사용) -->
+	<bean id="dataSource-oracle" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close"
+ 		p:driverClassName="#{sysProps['Globals.DriverClassName']}"
+ 		p:url="#{sysProps['Globals.Url']}"
+ 		p:username="#{sysProps['Globals.UserName']}"
+ 		p:password="#{sysProps['Globals.Password']}"
+	/>
+
+
+</beans>

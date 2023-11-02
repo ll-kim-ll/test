@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="m1DeviceCommand">
+	<!-- 페이지 처리 부분 선언 -->
+	<sql id = "sqlStart">
+		<![CDATA[
+		SELECT * FROM (
+			SELECT ROWNUM RN, Z.* FROM (
+		]]>
+    </sql>
+
+    <sql id = "sqlEnd">
+		<![CDATA[
+			) Z ) WHERE rn BETWEEN #{firstIndex} + 1 AND #{firstIndex} + #{recordCountPerPage}
+		]]>
+    </sql>
+
+   	<sql id = "deviceMax">
+		<![CDATA[
+		SELECT NVL(MAX(SEQ),0)+1
+		  FROM DEVICE_SETUP
+		]]>
+    </sql>
+	<!-- 페이지 처리 부분 선언 끝 -->
+
+	<!-- 클라이언트 명령 조회 -->
+	<select id="selectCommandDeviceList" parameterType="cmap" resultType="cmap">
+		<include refid = "sqlStart" />
+		<![CDATA[
+			SELECT SEQ,
+					EQPMN_ID,
+					NO,
+					SRCELCT,
+					CMMND_SE,
+					TRNSMIS_AT,
+					FAN_SRCELCT,
+					FAN_FNCTNG_MODE,
+					FAN_VE,
+					FAN_SETUP_TIME_ONE,
+					FAN_SETUP_TIME_TWO,
+					HUMIDIFIER_SRCELCT,
+					HUMIDIFIER_FNCTNG_MODE,
+					HUMIDIFIER_CNTNC_SETUP_TIME,
+					HUMIDIFIER_SETUP_TIME_ONE,
+					HUMIDIFIER_SETUP_TIME_TWO,
+					LED_SRCELCT,
+					LED_FNCTNG_MODE,
+					LED_SETUP_TIME_ONE,
+					LED_SETUP_TIME_TWO,
+					MOTION_SENSOR_MODE,
+					UV_SRCELCT,
+					REFLCT_AT,
+					TRNSMIS_SECND,
+					RM,
+					RGSUSR,
+					TO_CHAR(RGSDE, 'YYYY-MM-DD HH24:MI') AS RGSDE,
+					UPDUSR,
+					TO_CHAR(UPDDE, 'YYYY-MM-DD HH24:MI') AS UPDDE,
+				    COUNT(*) OVER () AS TOTAL_COUNT
+			  FROM  DEVICE_SETUP
+			 WHERE 1=1
+		]]>
+			   <if test='searchDevice !=null and searchDevice !=""'>
+				   AND EQPMN_ID = #{searchDevice}
+			   </if>
+			   <if test='searchReflctAt !=null and searchReflctAt !=""'>
+				   AND REFLCT_AT = #{searchReflctAt}
+			   </if>
+			   <if test='searchCmmndSe !=null and searchCmmndSe !=""'>
+				   AND CMMND_SE = #{searchCmmndSe}
+			   </if>
+
+			   <if test='searchDtFrom !=null and searchDtFrom !=""
+			           and searchDtTo !=null and searchDtTo !=""'>
+				   AND RGSDE BETWEEN TO_DATE(#{searchDtFrom}, 'YYYY-MM-DD') and TO_DATE(#{searchDtTo}, 'YYYY-MM-DD')+1
+			   </if>
+			   ORDER BY RGSDE DESC, EQPMN_ID, NO
+<!--
+		<![CDATA[
+			   AND RGSDE > SYSDATE - 1/24
+		]]>
+ -->
+		<include refid = "sqlEnd" />
+	</select>
+
+	<insert id="insertCommandDevice">
+		<![CDATA[
+			INSERT INTO DEVICE_SETUP (SEQ,
+											EQPMN_ID,
+											NO,
+											SRCELCT,
+											CMMND_SE,
+											TRNSMIS_AT,
+											FAN_SRCELCT,
+											FAN_FNCTNG_MODE,
+											FAN_VE,
+											FAN_SETUP_TIME_ONE,
+											FAN_SETUP_TIME_TWO,
+											HUMIDIFIER_SRCELCT,
+											HUMIDIFIER_FNCTNG_MODE,
+											HUMIDIFIER_CNTNC_SETUP_TIME,
+											HUMIDIFIER_SETUP_TIME_ONE,
+											HUMIDIFIER_SETUP_TIME_TWO,
+											LED_SRCELCT,
+											LED_FNCTNG_MODE,
+											LED_SETUP_TIME_ONE,
+											LED_SETUP_TIME_TWO,
+											MOTION_SENSOR_MODE,
+											UV_SRCELCT,
+											REFLCT_AT,
+											TRNSMIS_SECND,
+											RM,
+											RGSUSR,
+											RGSDE,
+											UPDUSR,
+											UPDDE
+										    )
+									VALUES(
+		]]>
+											(<include refid="deviceMax"/>),
+		<![CDATA[
+											#{eqpmnId},
+											#{no},
+											#{srcelct},
+											'1',
+											#{trnsmisAt},
+											#{fanSrcelct},
+											#{fanFnctngMode},
+											#{fanVe},
+											#{fanSetupTimeOne},
+											#{fanSetupTimeTwo},
+											#{humidifierSrcelct},
+											#{humidifierFnctngMode},
+											#{humidifierCntncSetupTime},
+											#{humidifierSetupTimeOne},
+											#{humidifierSetupTimeTwo},
+											#{ledSrcelct},
+											#{ledFnctngMode},
+											#{ledSetupTimeOne},
+											#{ledSetupTimeTwo},
+											#{motionSensorMode},
+											#{uvSrcelct},
+											'N',
+											#{trnsmisSecnd},
+											#{rm},
+											#{C_USER},
+											SYSDATE,
+											#{C_USER},
+											SYSDATE
+									)
+		]]>
+
+
+	</insert>
+
+</mapper>
+
